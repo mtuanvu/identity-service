@@ -21,7 +21,7 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
                 () -> new AppException(ErrorCode.USER_EXISTED));
 
-        //Kiểm tra mk user có khớp với trong db không
+        //Kiểm tra password user có khớp với trong db không
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         return passwordEncoder.matches(request.getPassword(), user.getPassword());
     }
