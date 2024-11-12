@@ -1,6 +1,5 @@
 package com.mtuanvu.identityservice.dto.request;
 
-import com.mtuanvu.identityservice.exception.ErrorCode;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
