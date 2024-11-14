@@ -1,4 +1,4 @@
-package com.mtuanvu.identityservice.dto.response;
+package com.mtuanvu.identityservice.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthenticationResponse {
+public class IntrospectRequest {
     private String token;
-    private boolean authenticated;
 }

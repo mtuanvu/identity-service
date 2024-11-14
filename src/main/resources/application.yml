@@ -18,3 +18,6 @@ server:
   port: 8080
   servlet:
     context-path: /identity #dung khi co microservice
+
+jwt:
+  signerKey: "5jNfSN9nejl7bpKNcfO2J3PB6QBrtg22FuG8DUiHzUxxRta8azatGtPdP8rWTapJ"
