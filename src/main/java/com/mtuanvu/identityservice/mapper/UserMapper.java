@@ -8,6 +8,8 @@ import com.mtuanvu.identityservice.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring") //Sử dụng Mapstruct để ánh xạ giữa DTO và Entity
 // componentModel = "spring" cho phép quản lý mapper như một String Bean
 public interface UserMapper {
@@ -16,4 +18,6 @@ public interface UserMapper {
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 
     UserResponse toUserResponse(User user);
+
+    List<UserResponse> toUsersResponse(List<User> users);
 }

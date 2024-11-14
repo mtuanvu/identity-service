@@ -39,8 +39,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers(){
+        List<User> users= userRepository.findAll();
+        return userMapper.toUsersResponse(users);
     }
 
     public UserResponse getUserById(Long id){
