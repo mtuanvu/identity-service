@@ -32,6 +32,7 @@ public class AuthenticationController {
                 .build();
     }
 
+    //verify-token
     @PostMapping("/introspect")
     public ApiResponse<IntrospectResponse> login(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         IntrospectResponse result = authenticationService.introspect(request);
