@@ -1,5 +1,6 @@
 package com.mtuanvu.identityservice.configuration;
 
+import com.mtuanvu.identityservice.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +8,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -31,6 +36,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(requests ->
                 //Các endpoint này không yêu cầu xác thực
                 requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/get/all").hasRole(Role.ADMIN.name())
                         //các yêu cầu còn lại đều yêu cầu xác thực
                         .anyRequest().authenticated());
 
@@ -38,7 +44,8 @@ public class SecurityConfig {
         //Cấu hình để yêu cầu JWT hợp lệ để truy cập các api
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder()))
+                        jwtConfigurer.decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
 
         //tắt csrf (cross-site Request forgery) vì không cần thiết cho REST API thông thường
@@ -46,6 +53,18 @@ public class SecurityConfig {
 
         //Trả về object đã cấu hình
         return httpSecurity.build();
+    }
+
+
+    //Customer
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
     //giải mã Jwt, sử dụng secret key. Sử dụng cho oauth2 ở trên
@@ -58,5 +77,11 @@ public class SecurityConfig {
                 .withSecretKey(secretKeySpec)  // Gắn secret key vào decoder
                 .macAlgorithm(MacAlgorithm.HS512) // Sử dụng thuật toán HS512
                 .build(); // Xây dựng JwtDecoder
+    }
+
+
+    @Bean
+    PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(10);
     }
 }

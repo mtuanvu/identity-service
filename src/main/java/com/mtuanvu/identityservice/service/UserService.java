@@ -4,27 +4,27 @@ import com.mtuanvu.identityservice.dto.request.UserCreateRequest;
 import com.mtuanvu.identityservice.dto.request.UserUpdateRequest;
 import com.mtuanvu.identityservice.dto.response.UserResponse;
 import com.mtuanvu.identityservice.entities.User;
+import com.mtuanvu.identityservice.enums.Role;
 import com.mtuanvu.identityservice.exception.AppException;
 import com.mtuanvu.identityservice.exception.ErrorCode;
 import com.mtuanvu.identityservice.mapper.UserMapper;
 import com.mtuanvu.identityservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
     private final UserMapper userMapper;
+
+    private final PasswordEncoder passwordEncoder;
 
     public User craeteUser(UserCreateRequest request){
 
@@ -33,8 +33,12 @@ public class UserService {
         }
         User user = userMapper.toUser(request);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10); //strength ở đây nếu càng lớn thì mật khẩu cũng được mã hóa khó lên
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
+        user.setRoles(roles);
 
         return userRepository.save(user);
     }
