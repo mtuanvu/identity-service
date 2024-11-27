@@ -35,6 +35,6 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
-    @ElementCollection
-    private Set<String> roles;
+    @ManyToMany
+    private Set<Role> roles;
 }
