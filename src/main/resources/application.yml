@@ -21,3 +21,5 @@ server:
 
 jwt:
   signerKey: "5jNfSN9nejl7bpKNcfO2J3PB6QBrtg22FuG8DUiHzUxxRta8azatGtPdP8rWTapJ"
+  valid-duration: 10 #tinh bang giay
+  refreshable-duration: 120 #tinh bang giay
