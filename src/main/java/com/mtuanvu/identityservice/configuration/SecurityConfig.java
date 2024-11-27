@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
                 // @Bean (các thành phần cấu hình và đối tượng quản lý vởi IoC container)
 @EnableWebSecurity  //Để kích hoạt tính năng bảo mật web trong ứng dụng spring.
                     // Đảm bảo ứng dụng web có khả năng bảo vệ api và yêu cầu bảo mật
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${jwt.signerKey}") //lấy giá trị từ file yml
@@ -36,7 +38,6 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(requests ->
                 //Các endpoint này không yêu cầu xác thực
                 requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/get/all").hasRole(Role.ADMIN.name())
                         //các yêu cầu còn lại đều yêu cầu xác thực
                         .anyRequest().authenticated());
 

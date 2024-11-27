@@ -10,11 +10,16 @@ import com.mtuanvu.identityservice.exception.ErrorCode;
 import com.mtuanvu.identityservice.mapper.UserMapper;
 import com.mtuanvu.identityservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +48,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public UserResponse getMyInfo(){
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name).orElseThrow(
+                ()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toUserResponse(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers(){
         List<User> users= userRepository.findAll();
         return userMapper.toUsersResponse(users);
