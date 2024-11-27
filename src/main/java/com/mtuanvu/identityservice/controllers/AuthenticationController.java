@@ -2,6 +2,7 @@ package com.mtuanvu.identityservice.controllers;
 
 import com.mtuanvu.identityservice.dto.request.AuthenticationRequest;
 import com.mtuanvu.identityservice.dto.request.IntrospectRequest;
+import com.mtuanvu.identityservice.dto.request.LogoutRequest;
 import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.dto.response.AuthenticationResponse;
 import com.mtuanvu.identityservice.dto.response.IntrospectResponse;
@@ -30,6 +31,13 @@ public class AuthenticationController {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
                 .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+
+        return ApiResponse.<Void>builder().build();
     }
 
     //verify-token

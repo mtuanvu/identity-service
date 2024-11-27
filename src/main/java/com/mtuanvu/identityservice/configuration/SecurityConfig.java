@@ -1,6 +1,7 @@
 package com.mtuanvu.identityservice.configuration;
 
 import com.mtuanvu.identityservice.enums.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,10 +28,10 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${jwt.signerKey}") //lấy giá trị từ file yml
-    private String signerKey;
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users/create", "/auth/token", "/auth/introspect"};
+    private final String[] PUBLIC_ENDPOINTS = {"/users/create", "/auth/token", "/auth/introspect", "/auth/logout"};
 
     //định nghĩa SecurityFilterChain để cấu hình bảo mật endpoint của ứng dụng
     @Bean
@@ -45,7 +46,7 @@ public class SecurityConfig {
         //Cấu hình để yêu cầu JWT hợp lệ để truy cập các api
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
+                        jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
@@ -69,17 +70,6 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    //giải mã Jwt, sử dụng secret key. Sử dụng cho oauth2 ở trên
-    @Bean
-    JwtDecoder jwtDecoder(){
-        //Tạo secretkey từ chuỗi bí mật (signerKey)
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        // Sử dụng NimbusJwtDecoder để cấu hình giải mã JWT với thuật toán HS512 và secret key
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)  // Gắn secret key vào decoder
-                .macAlgorithm(MacAlgorithm.HS512) // Sử dụng thuật toán HS512
-                .build(); // Xây dựng JwtDecoder
-    }
 
 
     @Bean

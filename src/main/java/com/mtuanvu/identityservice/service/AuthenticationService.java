@@ -2,11 +2,14 @@ package com.mtuanvu.identityservice.service;
 
 import com.mtuanvu.identityservice.dto.request.AuthenticationRequest;
 import com.mtuanvu.identityservice.dto.request.IntrospectRequest;
+import com.mtuanvu.identityservice.dto.request.LogoutRequest;
 import com.mtuanvu.identityservice.dto.response.AuthenticationResponse;
 import com.mtuanvu.identityservice.dto.response.IntrospectResponse;
+import com.mtuanvu.identityservice.entities.InvalidatedToken;
 import com.mtuanvu.identityservice.entities.User;
 import com.mtuanvu.identityservice.exception.AppException;
 import com.mtuanvu.identityservice.exception.ErrorCode;
+import com.mtuanvu.identityservice.repository.InvalidatedTokenRepository;
 import com.mtuanvu.identityservice.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -27,6 +30,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,6 +39,8 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
 
+    private final InvalidatedTokenRepository tokenRepository;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal //Đánh dấu tránh inject
     @Value("${jwt.signerKey}") //Lấy từ yml
@@ -68,6 +74,7 @@ public class AuthenticationService {
                 .subject(user.getUsername()) //Đại diện cho user đăng nhập
                 .issuer("mtuanvu.com") //xác định token này được issuer từ ai (người phát hành)
                 .issueTime(new Date()).expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli())) //Xác địn thời hạn của token
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -87,16 +94,25 @@ public class AuthenticationService {
         }
     }
 
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        SignedJWT signToken = verifyToken(request.getToken());
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
 
-    //Hàm verified token
-    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
-        //lấy token
-        String token = request.getToken();
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
 
         // Tạo đối tượng JWSVerifier sử dụng SIGNER_KEY để xác minh chữ ký của token
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
-        // Phân tích token và chuyển đổi nó thành đối tượng SignedJWT để truy cập các thông tin bên trong token
+       // Phân tích token và chuyển đổi nó thành đối tượng SignedJWT để truy cập các thông tin bên trong token
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         // Lấy thời gian hết hạn của token từ các claims trong token
@@ -105,9 +121,48 @@ public class AuthenticationService {
         //Kiểm tra chữ ký của token có hợp lệ hay không
         boolean verified = signedJWT.verify(verifier);
 
+
+        if (!(verified && expiryTime.after(new Date()))) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        if (invalidatedTokenRepository
+                .existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        return signedJWT;
+    }
+
+
+    //Hàm verified token
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        //lấy token
+        String token = request.getToken();
+
+        // Tạo đối tượng JWSVerifier sử dụng SIGNER_KEY để xác minh chữ ký của token
+//        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+//
+//        // Phân tích token và chuyển đổi nó thành đối tượng SignedJWT để truy cập các thông tin bên trong token
+//        SignedJWT signedJWT = SignedJWT.parse(token);
+//
+//        // Lấy thời gian hết hạn của token từ các claims trong token
+//        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+//
+//        //Kiểm tra chữ ký của token có hợp lệ hay không
+//        boolean verified = signedJWT.verify(verifier);
+        boolean isValid = true;
+
+        try {
+            //update tu verify token
+            verifyToken(token);
+        } catch (AppException e) {
+            isValid = false;
+        }
+
+
         //Trả về IntrospectResponse với trường valid xác định tính hợp lệ của token
         return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date())) // Kiểm tra cả chữ ký và thời gian hết hạn
+                .valid(isValid) // Kiểm tra cả chữ ký và thời gian hết hạn
                 .build();
 
     }
