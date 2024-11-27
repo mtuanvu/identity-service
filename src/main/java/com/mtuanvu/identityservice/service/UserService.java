@@ -3,11 +3,12 @@ package com.mtuanvu.identityservice.service;
 import com.mtuanvu.identityservice.dto.request.UserCreateRequest;
 import com.mtuanvu.identityservice.dto.request.UserUpdateRequest;
 import com.mtuanvu.identityservice.dto.response.UserResponse;
+import com.mtuanvu.identityservice.entities.Role;
 import com.mtuanvu.identityservice.entities.User;
-import com.mtuanvu.identityservice.enums.Role;
 import com.mtuanvu.identityservice.exception.AppException;
 import com.mtuanvu.identityservice.exception.ErrorCode;
 import com.mtuanvu.identityservice.mapper.UserMapper;
+import com.mtuanvu.identityservice.repository.RoleRepository;
 import com.mtuanvu.identityservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -31,6 +32,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleRepository roleRepository;
+
     public User craeteUser(UserCreateRequest request){
 
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -41,7 +44,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+//        roles.add(Role.USER.name());
 
 //        user.setRoles(roles);
 
@@ -58,7 +61,8 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")  khi sử dụng role còn sử dụng permissions thì làm theo cách dưới
+    @PreAuthorize("hasAnyAuthority('CREATE_DATA')")
     public List<UserResponse> getAllUsers(){
         List<User> users= userRepository.findAll();
         return userMapper.toUsersResponse(users);
@@ -76,6 +80,10 @@ public class UserService {
                 () -> new RuntimeException("User not found with id: " + id));
 
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        List<Role> roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

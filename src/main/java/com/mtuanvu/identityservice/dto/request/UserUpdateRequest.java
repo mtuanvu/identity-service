@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class UserUpdateRequest {
@@ -12,5 +13,6 @@ public class UserUpdateRequest {
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
+    private List<String> roles;
 
 }
