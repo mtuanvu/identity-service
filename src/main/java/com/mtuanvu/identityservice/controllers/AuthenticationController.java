@@ -3,6 +3,7 @@ package com.mtuanvu.identityservice.controllers;
 import com.mtuanvu.identityservice.dto.request.AuthenticationRequest;
 import com.mtuanvu.identityservice.dto.request.IntrospectRequest;
 import com.mtuanvu.identityservice.dto.request.LogoutRequest;
+import com.mtuanvu.identityservice.dto.request.RefreshRequest;
 import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.dto.response.AuthenticationResponse;
 import com.mtuanvu.identityservice.dto.response.IntrospectResponse;
@@ -27,6 +28,17 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
         //gọi authenticationService để kiểm tra thông tin đăng nhập
         AuthenticationResponse result = authenticationService.authenticate(request);
+
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> login(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        //gọi authenticationService để kiểm tra thông tin đăng nhập
+        AuthenticationResponse result = authenticationService.refreshToken(request);
 
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)

@@ -31,7 +31,8 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users/create", "/auth/token", "/auth/introspect", "/auth/logout"};
+    private final String[] PUBLIC_ENDPOINTS = {"/users/create", "/auth/token",
+            "/auth/introspect", "/auth/logout", "/auth/refresh"};
 
     //định nghĩa SecurityFilterChain để cấu hình bảo mật endpoint của ứng dụng
     @Bean

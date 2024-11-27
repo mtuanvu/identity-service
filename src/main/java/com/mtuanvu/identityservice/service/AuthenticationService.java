@@ -3,6 +3,7 @@ package com.mtuanvu.identityservice.service;
 import com.mtuanvu.identityservice.dto.request.AuthenticationRequest;
 import com.mtuanvu.identityservice.dto.request.IntrospectRequest;
 import com.mtuanvu.identityservice.dto.request.LogoutRequest;
+import com.mtuanvu.identityservice.dto.request.RefreshRequest;
 import com.mtuanvu.identityservice.dto.response.AuthenticationResponse;
 import com.mtuanvu.identityservice.dto.response.IntrospectResponse;
 import com.mtuanvu.identityservice.entities.InvalidatedToken;
@@ -104,6 +105,34 @@ public class AuthenticationService {
                 .build();
 
         invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        //Kiểm tra hiệu lực token
+        SignedJWT signedJWT = verifyToken(request.getToken());
+
+        //Lay thong tin tu claim
+        String jit = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        String username = signedJWT.getJWTClaimsSet().getSubject();
+
+        User user = userRepository.findByUsername(username).orElseThrow(
+                        () -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        String token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
 
