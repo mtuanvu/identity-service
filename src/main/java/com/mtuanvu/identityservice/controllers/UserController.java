@@ -8,6 +8,7 @@ import com.mtuanvu.identityservice.entities.User;
 import com.mtuanvu.identityservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,19 +16,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/create")
-    public ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
         //@Valid khai báo cho Spring biết cần phải validate cho cái obj UserCreateRequest
         //dựa theo các rule đã được define trong obj
+        log.info("Create: User Controller");
 
-        ApiResponse<User> userApiResponse = new ApiResponse<>();
+        ApiResponse<UserResponse> userApiResponse = new ApiResponse<>();
 
         userApiResponse.setCode(201);
-        userApiResponse.setResult(userService.craeteUser(request));
+        userApiResponse.setResult(userService.createUser(request));
 
         return userApiResponse;
     }

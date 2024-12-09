@@ -11,7 +11,6 @@ import com.mtuanvu.identityservice.mapper.UserMapper;
 import com.mtuanvu.identityservice.repository.RoleRepository;
 import com.mtuanvu.identityservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class UserService {
 
     private final RoleRepository roleRepository;
 
-    public User craeteUser(UserCreateRequest request){
+    public UserResponse createUser(UserCreateRequest request){
 
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -48,7 +46,7 @@ public class UserService {
 
 //        user.setRoles(roles);
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public UserResponse getMyInfo(){

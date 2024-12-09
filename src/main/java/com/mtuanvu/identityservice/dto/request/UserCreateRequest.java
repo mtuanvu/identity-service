@@ -1,11 +1,13 @@
 package com.mtuanvu.identityservice.dto.request;
 
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class UserCreateRequest {
     @Size(min = 5, message = "USERNAME_INVALID")
     private String username;
