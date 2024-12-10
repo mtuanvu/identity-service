@@ -7,10 +7,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice //Thông báp cho Spring nếu có exception sảy ra thì class này sẽ chịu trách nhiệm trong toàn project
+@ControllerAdvice // Thông báp cho Spring nếu có exception sảy ra thì class này sẽ chịu trách nhiệm trong toàn project
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class) //ở đây có nghĩa là nếu sảy ra RunTimeEx thì dùng thằng này
+    @ExceptionHandler(value = Exception.class) // ở đây có nghĩa là nếu sảy ra RunTimeEx thì dùng thằng này
     ResponseEntity<ApiResponse> handlingRuntimeException(Exception e) {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
         try {
             errorCode = ErrorCode.valueOf(enumKey);
-        }catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
 
         }
         ApiResponse apiResponse = new ApiResponse();
@@ -42,15 +42,14 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException e) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        return ResponseEntity.status(errorCode.getStatusCode()).body(
-                ApiResponse.builder()
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
-                        .build()
-        );
+                        .build());
     }
 
-    @ExceptionHandler(value = AppException.class) //ở đây có nghĩa là nếu sảy ra RunTimeEx thì dùng thằng này
+    @ExceptionHandler(value = AppException.class) // ở đây có nghĩa là nếu sảy ra RunTimeEx thì dùng thằng này
     ResponseEntity<ApiResponse> handlingRuntimeException(AppException e) {
         ErrorCode errorCode = e.getErrorCode();
 
@@ -59,9 +58,6 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
-
 }

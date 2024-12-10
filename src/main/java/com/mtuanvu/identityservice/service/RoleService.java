@@ -1,7 +1,9 @@
 package com.mtuanvu.identityservice.service;
 
+import java.util.HashSet;
+import java.util.List;
+
 import com.mtuanvu.identityservice.dto.request.RoleRequest;
-import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.dto.response.RoleResponse;
 import com.mtuanvu.identityservice.entities.Permission;
 import com.mtuanvu.identityservice.entities.Role;
@@ -10,9 +12,6 @@ import com.mtuanvu.identityservice.repository.PermissionRepository;
 import com.mtuanvu.identityservice.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,6 @@ public class RoleService {
 
         Role saveRole = roleRepository.save(role);
         return roleMapper.toRoleResponse(saveRole);
-
     }
 
     public List<RoleResponse> getAll() {

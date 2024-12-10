@@ -1,5 +1,7 @@
 package com.mtuanvu.identityservice.configuration;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.exception.ErrorCode;
@@ -10,11 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import java.io.IOException;
-
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+    public void commence(
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
 

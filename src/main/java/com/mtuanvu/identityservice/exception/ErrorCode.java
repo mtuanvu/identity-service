@@ -1,11 +1,10 @@
 package com.mtuanvu.identityservice.exception;
 
-import lombok.AllArgsConstructor;
+import static org.springframework.http.HttpStatus.*;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 public enum ErrorCode {
@@ -17,7 +16,6 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", FORBIDDEN),
-
     ;
     private int code;
     private String message;

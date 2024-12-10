@@ -1,15 +1,14 @@
 package com.mtuanvu.identityservice.service;
 
+import java.util.List;
+
 import com.mtuanvu.identityservice.dto.request.PermissionRequest;
-import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.dto.response.PermissionResponse;
 import com.mtuanvu.identityservice.entities.Permission;
 import com.mtuanvu.identityservice.mapper.PermissionMapper;
 import com.mtuanvu.identityservice.repository.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

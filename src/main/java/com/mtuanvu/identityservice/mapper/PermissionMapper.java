@@ -9,5 +9,6 @@ import org.mapstruct.Mapper;
 public interface PermissionMapper {
 
     Permission toPermission(PermissionRequest request);
+
     PermissionResponse toPermissionResponse(Permission permission);
 }

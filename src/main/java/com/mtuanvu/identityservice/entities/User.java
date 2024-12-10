@@ -1,12 +1,11 @@
 package com.mtuanvu.identityservice.entities;
 
+import java.time.LocalDate;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @Getter

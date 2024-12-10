@@ -1,5 +1,7 @@
 package com.mtuanvu.identityservice.controllers;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mtuanvu.identityservice.dto.request.UserCreateRequest;
@@ -20,9 +22,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.LocalDate;
-
 
 @Slf4j
 @SpringBootTest
@@ -69,31 +68,24 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-        //
+    //
     void createUser_validRequest_success() throws Exception {
-        //GIVEN
+        // GIVEN
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-
-        //WHEN
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users/create")
+        // WHEN
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
-
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value("201"))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.username")
-                        .value("mtuanvu1234"))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.firstName")
-                        .value("John"))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.lastName")
-                        .value("Doe"));
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value("201"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("mtuanvu1234"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.firstName").value("John"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.lastName").value("Doe"));
 
         log.info("Result: {}", resultActions.andReturn().getResponse().getContentAsString());
-        //THEN
+        // THEN
     }
 }

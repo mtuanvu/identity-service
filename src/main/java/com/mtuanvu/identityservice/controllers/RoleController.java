@@ -1,5 +1,7 @@
 package com.mtuanvu.identityservice.controllers;
 
+import java.util.List;
+
 import com.mtuanvu.identityservice.dto.request.RoleRequest;
 import com.mtuanvu.identityservice.dto.response.ApiResponse;
 import com.mtuanvu.identityservice.dto.response.RoleResponse;
@@ -7,8 +9,6 @@ import com.mtuanvu.identityservice.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
@@ -26,7 +26,7 @@ public class RoleController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<RoleResponse> createRole(@RequestBody @Valid RoleRequest request){
+    public ApiResponse<RoleResponse> createRole(@RequestBody @Valid RoleRequest request) {
         return ApiResponse.<RoleResponse>builder()
                 .code(201)
                 .message("Create role")
@@ -35,7 +35,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/delete/{role}")
-    public ApiResponse<Void> deleteRole(@PathVariable("role") String role){
+    public ApiResponse<Void> deleteRole(@PathVariable("role") String role) {
         roleService.deleteRole(role);
         return ApiResponse.<Void>builder().build();
     }

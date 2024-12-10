@@ -1,5 +1,7 @@
 package com.mtuanvu.identityservice.controllers;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mtuanvu.identityservice.dto.request.UserCreateRequest;
@@ -20,9 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
-
-
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,7 +38,7 @@ public class UserControllerTest {
     private LocalDate dob;
 
     @BeforeEach
-    void initData(){
+    void initData() {
         dob = LocalDate.of(1990, 1, 1);
         request = UserCreateRequest.builder()
                 .username("mtuanvu1234")
@@ -61,47 +60,39 @@ public class UserControllerTest {
     @Test
     //
     void createUser_validRequest_success() throws Exception {
-        //GIVEN
+        // GIVEN
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-        Mockito.when(userService.createUser(ArgumentMatchers.any()))
-                .thenReturn(response);
+        Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(response);
 
-        //WHEN
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/users/create")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(content))
+        // WHEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value("201"))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.id")
-                        .value(1L));
-        //THEN
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value("201"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.id").value(1L));
+        // THEN
     }
 
     @Test
-        //
+    //
     void createUser_usernameInvalid_false() throws Exception {
-        //GIVEN
+        // GIVEN
         request.setUsername("mtu");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-
-        //WHEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users/create")
+        // WHEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value("1003"))
-                .andExpect(MockMvcResultMatchers.jsonPath("message")
-                        .value("Username must be at least 5 character!"));
-        //THEN
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value("1003"))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username must be at least 5 character!"));
+        // THEN
     }
 }
