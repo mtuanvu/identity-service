@@ -8,7 +8,6 @@ import com.mtuanvu.identityservice.dto.request.IntrospectRequest;
 import com.mtuanvu.identityservice.dto.response.IntrospectResponse;
 import com.mtuanvu.identityservice.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,10 +21,13 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Value("${jwt.signerKey}")
     private String singerKey;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     private NimbusJwtDecoder nimbusJwtDecoder = null;
+
+    public CustomJwtDecoder(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public Jwt decode(String token) throws JwtException {
@@ -45,8 +47,6 @@ public class CustomJwtDecoder implements JwtDecoder {
                     .macAlgorithm(MacAlgorithm.HS512)
                     .build();
         }
-
-        System.out.println(nimbusJwtDecoder);
 
         return nimbusJwtDecoder.decode(token);
     }
