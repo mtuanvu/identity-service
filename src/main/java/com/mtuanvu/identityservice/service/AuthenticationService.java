@@ -57,6 +57,7 @@ public class AuthenticationService {
 
     // Hàm thực thi generate token
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        log.info("SignerKey: {}", SIGNER_KEY);
         // Kiểm tra xem username có tồn tại không
         User user = userRepository
                 .findByUsername(request.getUsername())

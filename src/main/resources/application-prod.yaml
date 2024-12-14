@@ -1,0 +1,4 @@
+
+jwt:
+  valid-duration: 7200 #tinh bang giay
+  refreshable-duration: 72000 #tinh bang giay
