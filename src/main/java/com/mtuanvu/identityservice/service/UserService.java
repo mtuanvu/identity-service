@@ -68,13 +68,15 @@ public class UserService {
     }
 
     public UserResponse getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        User user =
+                userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateUser(Long id, UserUpdateRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        User user =
+                userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
